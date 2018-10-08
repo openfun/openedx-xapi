@@ -43,3 +43,81 @@ services:
       - mysql
       - mongodb
       - memcached
+      - xapi
+
+  # Learning locker services
+  redis:
+    image: redis:4-alpine
+
+  xapi:
+    image: learninglocker/xapi-service:v1.1.0
+    restart: unless-stopped
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017/learninglocker_v2
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - mongodb
+      - redis
+
+  api:
+    image: up2university/learninglocker2-app:${DOCKER_TAG}
+    environment:
+      - DOMAIN_NAME
+      - APP_SECRET
+      - SMTP_HOST
+      - SMTP_PORT
+      - SMTP_SECURED
+      - SMTP_USER
+      - SMTP_PASS
+      - MONGODB_PATH
+    command: "node api/dist/server"
+    depends_on:
+      - mongodb
+      - redis
+      - mailcatcher
+
+  ui:
+    image: up2university/learninglocker2-app:${DOCKER_TAG}
+    environment:
+      - DOMAIN_NAME
+      - APP_SECRET
+      - SMTP_HOST
+      - SMTP_PORT
+      - SMTP_SECURED
+      - SMTP_USER
+      - SMTP_PASS
+      - MONGODB_PATH
+    command: "./entrypoint-ui.sh"
+    depends_on:
+      - mongodb
+      - redis
+      - api
+
+  # FIXME: not sure we need this service for development
+  worker:
+    image: up2university/learninglocker2-app:${DOCKER_TAG}
+    environment:
+      - DOMAIN_NAME
+      - APP_SECRET
+      - SMTP_HOST
+      - SMTP_PORT
+      - SMTP_SECURED
+      - SMTP_USER
+      - SMTP_PASS
+      - MONGODB_PATH
+    command: "node worker/dist/server"
+    depends_on:
+      - mongodb
+      - redis
+      - mailcatcher
+
+  nginx:
+    image: up2university/learninglocker2-nginx:${DOCKER_TAG}
+    environment:
+      - DOMAIN_NAME
+    depends_on:
+      - ui
+      - xapi
+    ports:
+      - "8443:443"
+      - "8080:80"
