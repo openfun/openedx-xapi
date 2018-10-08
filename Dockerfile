@@ -39,6 +39,13 @@ RUN pip install --no-cache-dir --src /usr/local/src -e /edx/app/xapi
 RUN mkdir /edx/app/edxapp/staticfiles && \
     cp /edx/app/edxapp/edx-platform/common/static/webpack-stats.json /edx/app/edxapp/staticfiles/
 
+# Install dockerize to wait for mysql before running the container command
+# (and prevent connection issues)
+ENV DOCKERIZE_VERSION v0.6.1
+RUN python -c "import requests;open('dockerize-linux-amd64.tar.gz', 'wb').write(requests.get('https://github.com/jwilder/dockerize/releases/download/${DOCKERIZE_VERSION}/dockerize-linux-amd64-${DOCKERIZE_VERSION}.tar.gz', allow_redirects=True).content)" && \
+    tar -C /usr/local/bin -xzvf dockerize-linux-amd64.tar.gz && \
+    rm dockerize-linux-amd64.tar.gz
+
 # Switch to an un-privileged user matching the host user to prevent permission
 # issues with volumes (host folders)
 USER ${UID}:${GID}
