@@ -36,7 +36,8 @@ services:
     volumes:
       - .:/edx/app/xapi
     command: >
-      python manage.py lms runserver 0.0.0.0:8000 --settings=fun.docker_run_development
+      dockerize -wait tcp://mysql:3306 -timeout 60s
+          python manage.py lms runserver 0.0.0.0:8000 --settings=fun.docker_run_development
     depends_on:
       - mailcatcher
       - mysql
