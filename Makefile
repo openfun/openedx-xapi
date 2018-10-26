@@ -8,7 +8,7 @@ COMPOSE_RUN      = $(COMPOSE) run --rm -e HOME="/tmp"
 COMPOSE_EXEC     = $(COMPOSE) exec
 
 # Django
-MANAGE           = $(COMPOSE_EXEC) lms python manage.py lms
+MANAGE           = $(COMPOSE_EXEC) lms dockerize -wait tcp://mysql:3306 -timeout 60s python manage.py lms
 
 default: help
 
