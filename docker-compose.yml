@@ -35,6 +35,7 @@ services:
       - "8000:8000"
     volumes:
       - .:/edx/app/xapi
+      - ./docker/config/lms/docker_run_development.py:/config/lms/docker_run_development.py
     command: >
       dockerize -wait tcp://mysql:3306 -timeout 60s
           python manage.py lms runserver 0.0.0.0:8000 --settings=fun.docker_run_development
