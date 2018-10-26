@@ -12,11 +12,15 @@ MANAGE           = $(COMPOSE_EXEC) lms python manage.py lms
 
 default: help
 
-bootstrap: build dev migrate superusers ## bootstrap the project
+bootstrap: build dev migrate demo superusers ## bootstrap the project
 
 build:  ## build the xapi image
 	$(COMPOSE) build lms
 .PHONY: build
+
+demo:  ## import demo course
+	$(MANAGE) import /edx/app/edxapp/data /edx/demo/course
+.PHONY: demo
 
 dev:  ## start the lms service (and its dependencies)
 	$(COMPOSE) up -d lms nginx

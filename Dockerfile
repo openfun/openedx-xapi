@@ -46,6 +46,19 @@ RUN python -c "import requests;open('dockerize-linux-amd64.tar.gz', 'wb').write(
     tar -C /usr/local/bin -xzvf dockerize-linux-amd64.tar.gz && \
     rm dockerize-linux-amd64.tar.gz
 
+# Download a demo course in the container itself so that we can import if
+# further without having to deal with volume permissions, etc.
+ARG DEMO_COURSE_URL=https://github.com/edx/edx-demo-course/archive/open-release/hawthorn.1.tar.gz
+RUN mkdir -p /edx/demo/course && \
+    python -c "import requests;open('/edx/demo/course.tgz', 'wb').write(requests.get('${DEMO_COURSE_URL}', allow_redirects=True).content)" && \
+    cd /edx/demo && \
+    tar xzf course.tgz -C ./course --strip-components=1
+
+# Give running user write permissions for the data directory where courses will
+# be imported
+RUN mkdir -p /edx/app/edxapp/data && \
+    chown edxapp:edxapp /edx/app/edxapp/data
+
 # Switch to an un-privileged user matching the host user to prevent permission
 # issues with volumes (host folders)
 USER ${UID}:${GID}
