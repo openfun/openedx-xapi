@@ -24,7 +24,7 @@ dev:  ## start the lms service (and its dependencies)
 
 down:  ## stop & remove all services
 	$(COMPOSE) down
-.PHONY: stop
+.PHONY: down
 
 logs:  ## get lms service logs
 	$(COMPOSE) logs -f lms
