@@ -1,3 +1,5 @@
+:warning: **DISCONTINUED PROJECT** :warning:
+
 # Open edX xAPI plugin
 
 ## Specification
